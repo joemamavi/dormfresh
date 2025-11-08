@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleaning Requests - Staff Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header -->
+        <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-8 mb-8 border border-white/20">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold text-gray-800 mb-3">
+                    <i class="fas fa-broom mr-3 text-blue-600"></i>
+                    Cleaning Requests Dashboard
+                </h1>
+                <p class="text-gray-600 text-lg">Manage room cleaning requests in priority order</p>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-100 text-sm font-medium">Total Requests</p>
+                        <p class="text-3xl font-bold" id="totalRequests">0</p>
+                    </div>
+                    <div class="bg-white/20 p-3 rounded-lg">
+                        <i class="fas fa-list-ul text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-6 text-white shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-orange-100 text-sm font-medium">High Priority</p>
+                        <p class="text-3xl font-bold" id="highPriorityRequests">0</p>
+                    </div>
+                    <div class="bg-white/20 p-3 rounded-lg">
+                        <i class="fas fa-exclamation-triangle text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-100 text-sm font-medium">Completed Today</p>
+                        <p class="text-3xl font-bold" id="completedToday">0</p>
+                    </div>
+                    <div class="bg-white/20 p-3 rounded-lg">
+                        <i class="fas fa-check-circle text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-4 mb-6">
+            <button onclick="refreshRequests()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl">
+                <i class="fas fa-sync-alt"></i>
+                Refresh List
+            </button>
+            
+            <button onclick="clearCompleted()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl">
+                <i class="fas fa-trash-alt"></i>
+                Clear All Completed
+            </button>
+        </div>
+
+        <!-- Cleaning Requests Table -->
+        <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+            <div class="bg-gradient-to-r from-gray-800 to-gray-900 text-white p-6">
+                <h2 class="text-2xl font-bold flex items-center gap-3">
+                    <i class="fas fa-clipboard-list"></i>
+                    Pending Cleaning Requests
+                </h2>
+                <p class="text-gray-300 mt-2">Ordered by request time (oldest first)</p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Priority</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Room Number</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Request Time</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Requested By</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Issue Type</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+    
+    {% if data %}
+
+        {% for row in data %}
+        <tr class="hover:bg-gray-50">
+            
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                    High
+                </span>
+            </td>
+            
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {{ row['room'] }}
+            </td>
+            
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                N/A </td>
+            
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                N/A </td>
+            
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                {{ row['issue'] }}
+            </td>
+            
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                    {{ row['status'] }}
+                </span>
+            </td>
+            
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <a href="#" class="text-green-600 hover:text-green-900">Mark as Done</a>
+            </td>
+
+        </tr>
+        {% endfor %}
+        
+    {% else %}
+
+        <tr>
+            <td colspan="7">
+                <div class="text-center py-16">
+                    <i class="fas fa-clipboard-check text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">No Pending Requests</h3>
+                    <p class="text-gray-500">All rooms are clean! Great job team.</p>
+                </div>
+            </td>
+        </tr>
+
+    {% endif %}
+    </tbody>
+        
+                
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="mt-8 bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20">
+            <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-6 rounded-t-2xl">
+                <h3 class="text-xl font-bold flex items-center gap-3">
+                    <i class="fas fa-history"></i>
+                    Recent Activity
+                </h3>
+            </div>
+            <div class="p-6">
+                <div id="recentActivity" class="space-y-3">
+                    <!-- Recent activity items will be added here -->
+                    <p class="text-gray-500 italic">No recent activity</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-8 max-w-md mx-4 transform transition-all">
+            <div class="text-center">
+                <div class="bg-green-100 rounded-full p-3 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-check text-green-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Request Completed!</h3>
+                <p class="text-gray-600 mb-6">The cleaning request has been marked as complete.</p>
+                <button onclick="closeModal()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    Continue
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+    <script src="{{ url_for('static', filename='stascript.js') }}"></script>
+</body>
+</html>
